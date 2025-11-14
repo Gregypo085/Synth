@@ -5,6 +5,7 @@ from pynput.keyboard import Key, Listener
 from main import NotePlayer
 import threading
 
+
 # Install and import Pyo for more advanced audio processing. 
 # Pyo is designed for real-time synths or DAW style projects. Not something I need right now.
 # https://github.com/Pyo/pyo
@@ -73,3 +74,4 @@ with Listener(
         on_release=on_release) as listener:
     listener.join()
     
+

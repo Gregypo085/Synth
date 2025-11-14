@@ -84,7 +84,7 @@ class NotePlayer: # Class to play a note for the active notes dictionary
 
     def audio_callback(self, outdata, frames, time, status): # Audio callback function
         chunk = self.generator_func(frames) # Generate chunk of samples
-        outdata[:] = chunk.reshape(-1, 1) # Reshape the chunk of samples
+        outdata[:] = chunk.reshape(-1, 1) # Reshape the chunk of samples. [:] means [0:len(sequence):1], which selects every element from the start (index 0) to the end of the sequence. 
 
     def start(self): # Start the stream
         self.stream.start()

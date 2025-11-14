@@ -3,6 +3,7 @@ import sounddevice as sd
 from pynput.keyboard import Key, Listener
 #from main import sine_wave_generator
 from main import NotePlayer
+import threading
 
 # Install and import Pyo for more advanced audio processing. 
 # Pyo is designed for real-time synths or DAW style projects. Not something I need right now.
@@ -21,7 +22,7 @@ for key in range(1, KEYS + 1):
     n = key - A4_POS
     freq = A4_FREQ * (2 ** (n / 12))
     note = round(freq, 2)
-    print(f"Key {key} - {note}")
+    #print(f"Key {key} - {note}") # Print the note frequency
 
 note_frequencies = {
     "a": 261.63, #C3
@@ -62,7 +63,7 @@ def on_release(key): # Function to handle key release events
         k = key.char # Get the character of the key released
         if k in active_notes: # If the key is in the dictionary
             print(f"Key {k} released") # Print the key released
-            active_notes[k].stop() # Stop the player
+            threading.Thread(target=active_notes[k].stop).start() # Stop the player in a separate thread https://docs.python.org/3/library/threading.html
             del active_notes[k] # Remove the player from the dictionary
     except AttributeError: # Non-character keys
         pass

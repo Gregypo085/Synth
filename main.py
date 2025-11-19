@@ -8,6 +8,7 @@ from pynput.keyboard import Key, Listener  # Keyboard library for listening to k
 
 sample_rate = 44100 # Sample rate in Hz
 amplitude = 0.3 # Amplitude of the sound
+fade_time = 0.1 # Fade time in seconds
 
 
 def main(): # Main function
@@ -58,8 +59,25 @@ def white_noise(
 
     return noise
 
+def fade_in(generator_func, fade_time=0.5):
+    time_index = 0 # Current time index. Keeps track of how far along the wave is so it can continue smoothly from where it left off.
+    amplitude_factor = 0 # Current amplitude index. Keeps track of how far along the amplitude is so it can continue smoothly from where it left off.
+
+    def generator(chunk_size): # Generator function that generates a chunk of samples
+        nonlocal time_index # Nonlocal keyword is used to modify a variable that is defined in the outer scope of the generator function.
+        nonlocal amplitude_factor # Nonlocal keyword is used to modify a variable that is defined in the outer scope of the generator function.
+        sound = generator_func(chunk_size) # Original sound
+        samples = amplitude_factor * sound # Fade in modified sound
+        time_index += chunk_size # Update time index to keep track of where we are in the wave.
+        amplitude_factor += chunk_size / fade_time # Update amplitude index to keep track of where we are in the amplitude.
+        if amplitude_factor > 1:
+            amplitude_factor = 1
+        return samples.astype(np.float32) # Returns the chunk of samples
+    
+    return generator
+
 # Sine wave generator
-def sine_wave_generator(frequency = 440, amplitude = 0.3, sample_rate = 44100):
+def sine_wave_generator(frequency = 440, amplitude = 0.3, sample_rate = 44100, fade_time = 0.1):
     time_index = 0 # Current time index. Keeps track of how far along the wave is so it can continue smoothly from where it left off.
     omega = 2 * np.pi * frequency / sample_rate # Angular frequency
 
@@ -83,7 +101,8 @@ class NotePlayer: # Class to play a note for the active notes dictionary
         )
 
     def audio_callback(self, outdata, frames, time, status): # Audio callback function
-        chunk = self.generator_func(frames) # Generate chunk of samples
+        fade_in_generator_func = fade_in(self.generator_func, fade_time = 0.1)
+        chunk = fade_in_generator_func(frames) # Generate chunk of samples
         outdata[:] = chunk.reshape(-1, 1) # Reshape the chunk of samples. [:] means [0:len(sequence):1], which selects every element from the start (index 0) to the end of the sequence. 
 
     def start(self): # Start the stream

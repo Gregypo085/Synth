@@ -19,10 +19,10 @@ A4_POS = 49
 A4_FREQ = 440.0
 KEYS = 88
 
-for key in range(1, KEYS + 1):
-    n = key - A4_POS
-    freq = A4_FREQ * (2 ** (n / 12))
-    note = round(freq, 2)
+for key in range(1, KEYS + 1): # Generate a list of frequencies for each key
+    n = key - A4_POS # Calculate the number of semitones from A4
+    freq = A4_FREQ * (2 ** (n / 12)) # Calculate the frequency of the note
+    note = round(freq, 2) # Round the frequency to 2 decimal places
     #print(f"Key {key} - {note}") # Print the note frequency
 
 note_frequencies = {

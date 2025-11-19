@@ -2,7 +2,7 @@ import numpy as np
 import sounddevice as sd
 from pynput.keyboard import Key, Listener
 #from main import sine_wave_generator
-from main import NotePlayer
+from main2 import NotePlayer
 import threading
 
 
